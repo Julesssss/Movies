@@ -2,15 +2,17 @@ package website.julianrosser.movies;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
-    private String[] mDataset;
+    private ArrayList<Movie> mDataset;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -18,14 +20,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView mImageView;
-        public ViewHolder(ImageView v) {
-            super(v);
-            mImageView = v;
+        //public TextView mTextView;
+
+        public ViewHolder(RelativeLayout rl) {
+            super(rl);
+
+            mImageView = (ImageView) rl.findViewById(R.id.imageView);
+            // mTextView = t;
         }
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public MyAdapter(String[] myDataset) {
+    public MyAdapter(ArrayList<Movie> myDataset) {
         mDataset = myDataset;
     }
 
@@ -33,18 +39,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
-        // create a new view
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.grid_image, parent, false);
-        // set the view's size, margins, paddings and layout parameters
 
-        // Create ViewHolder
-        ViewHolder viewHolder = new ViewHolder((ImageView) view);
-
-        // Pass image url to Picasso library
-        Picasso.with(MainActivity.mContext).load("http://i.imgur.com/DvpvklR.png").into(viewHolder.mImageView);
-
-        return viewHolder;
+        return new ViewHolder((RelativeLayout) LayoutInflater.from(MainActivity.mContext)
+                .inflate(R.layout.movie_view, parent, false));
     }
 
     // Replace the contents of a view (invoked by the layout manager)
@@ -52,12 +49,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+
+        String urlImage = mDataset.get(position).getPoster_url();
+
+        // Pass image url to Picasso library
+        Picasso.with(MainActivity.mContext).load(urlImage).into(holder.mImageView);
+
         //holder.mImageView.setText(mDataset[position]); // todo - set film name?
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.size();
     }
 }
