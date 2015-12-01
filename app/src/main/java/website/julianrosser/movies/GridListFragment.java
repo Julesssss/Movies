@@ -1,13 +1,20 @@
 package website.julianrosser.movies;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -28,6 +35,10 @@ public class GridListFragment extends Fragment {
     RecyclerView mRecyclerView;
     RecyclerView.LayoutManager mLayoutManager;
     MyAdapter mAdapter;
+
+    String sort_by = "popularity.desc";
+
+    static ArrayList<Movie> movies;
 
     @SuppressWarnings("unused")
     final String TAG = getClass().getSimpleName();
@@ -68,13 +79,13 @@ public class GridListFragment extends Fragment {
         return view;
     }
 
+
     public class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movie>> {
 
         final String TAG = getClass().getSimpleName();
 
         @Override
         protected ArrayList<Movie> doInBackground(Void... params) {
-
 
             Log.d(TAG, "doInBackground");
             // These two need to be declared outside the try/catch
@@ -85,7 +96,6 @@ public class GridListFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String moviesJsonStr = null;
 
-            String sort_by = "popularity.desc";
             String page = "2";
 
             try {
@@ -166,8 +176,11 @@ public class GridListFragment extends Fragment {
             final String JSON_TITLE = "title";
             final String JSON_POSTER_PATH = "poster_path";
             final String JSON_OVERVIEW = "overview";
+            final String JSON_RELEASE_DATE = "release_date";
             final String JSON_ID = "id";
             final String JSON_RESULTS = "results";
+            final String JSON_VOTE_AVERAGE = "vote_average";
+            final String JSON_VOTE_COUNT = "vote_count";
 
             JSONObject resultsJSON = new JSONObject(moviesJsonStr);
             JSONArray moviesArray = resultsJSON.getJSONArray(JSON_RESULTS);
@@ -179,28 +192,92 @@ public class GridListFragment extends Fragment {
                 String title;
                 String poster_url;
                 String overview;
+                String release_date;
                 int id;
+                double vote_average;
+                int vote_count;
 
                 // Get the JSON object representing the day
                 JSONObject movie = moviesArray.getJSONObject(i);
 
                 title = movie.getString(JSON_TITLE);
-                poster_url = getString(R.string.movies_base_url) + movie.getString(JSON_POSTER_PATH);
+                poster_url = movie.getString(JSON_POSTER_PATH);
                 overview = movie.getString(JSON_OVERVIEW);
                 id = movie.getInt(JSON_ID);
+                release_date = movie.getString(JSON_RELEASE_DATE);
+                vote_average = movie.getDouble(JSON_VOTE_AVERAGE);
+                vote_count = movie.getInt(JSON_VOTE_COUNT);
 
-                movies.add(new Movie(title, poster_url, overview, id));
+                movies.add(new Movie(title, poster_url, overview, id, release_date, vote_average, vote_count));
             }
             return movies;
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
+        protected void onPostExecute(ArrayList<Movie> movieArray) {
+
+            movies = movieArray;
 
             // specify an adapter (see also next example)
-            mAdapter = new MyAdapter(movies);
+            mAdapter = new MyAdapter(movieArray);
             mRecyclerView.setAdapter(mAdapter);
         }
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_grid, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_sort) {
+
+            // Create an instance of the dialog fragment and show it
+            DialogFragment dialog = new SortDialogFragment();
+            dialog.show(getActivity().getSupportFragmentManager(), "SortDialogFragment");
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public class SortDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Sort by")
+                    .setItems(R.array.sort_choices, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // The 'which' argument contains the index position
+                            // of the selected item
+
+                            if (which == 0) {
+                                sort_by = "release_date.desc";
+                            } else if (which == 1) {
+                                sort_by = "popularity.desc";
+                            } else if (which == 2) {
+                                sort_by = "vote_average.desc";
+                            } else if (which == 3) {
+                                sort_by = "original_title.desc";
+                            }
+
+                            FetchMoviesTask fmt = new FetchMoviesTask();
+                            fmt.execute();
+
+                        }
+                    });
+            return builder.create();
+        }
+
+
     }
 }
 

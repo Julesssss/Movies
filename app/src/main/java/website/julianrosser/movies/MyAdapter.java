@@ -1,7 +1,9 @@
 package website.julianrosser.movies;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,6 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             super(rl);
 
             mImageView = (ImageView) rl.findViewById(R.id.imageView);
+
             // mTextView = t;
         }
     }
@@ -46,14 +49,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        String urlImage = mDataset.get(position).getPoster_url();
+        String urlImage = mDataset.get(position).getPosterUrlSize500();
 
         // Pass image url to Picasso library
         Picasso.with(MainActivity.mContext).load(urlImage).into(holder.mImageView);
+
+        holder.mImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent movieIntent = new Intent(MainActivity.mContext, MovieFragment.class);
+                movieIntent.putExtra(MainActivity.MOVIE_DATA_KEY, position);
+                MainActivity.mContext.startActivity(movieIntent);
+            }
+        });
 
         //holder.mImageView.setText(mDataset[position]); // todo - set film name?
     }
@@ -63,4 +75,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     public int getItemCount() {
         return mDataset.size();
     }
+
+
 }
