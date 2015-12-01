@@ -1,6 +1,10 @@
 # Movies Application
 
+App for discovering new films & TV shows.
+
+![](http://julianrosser.website/images/app_screenshots/movies01.png)
+
 // ToDo
-- Movies API
-- Get correct image size
-- Create array from api?
+- correct image size in RecyclerView columns
+- alternative API calls
+- DetailFragment onClick
