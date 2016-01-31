@@ -2,6 +2,7 @@ package website.julianrosser.movies;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,7 +37,13 @@ public class GridListFragment extends Fragment {
     RecyclerView.LayoutManager mLayoutManager;
     MyAdapter mAdapter;
 
-    String sort_by = "popularity.desc";
+    public static final String PREFS_NAME = "MyPrefsFile";
+    public static final String PREF_SORT = "pref_sort_by";
+
+    // Restore preferences
+    SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
+    String sort_by = settings.getString(PREF_SORT, "popularity.desc");
+
 
     static ArrayList<Movie> movies;
 
@@ -79,6 +86,12 @@ public class GridListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+
+    }
 
     public class FetchMoviesTask extends AsyncTask<Void, Void, ArrayList<Movie>> {
 
@@ -259,26 +272,40 @@ public class GridListFragment extends Fragment {
                             // The 'which' argument contains the index position
                             // of the selected item
 
+                            String snackBarMessage = "";
+
                             if (which == 0) {
                                 sort_by = "release_date.desc";
+                                snackBarMessage = "Sorted by release date";
                             } else if (which == 1) {
                                 sort_by = "popularity.desc";
+                                snackBarMessage = "Sorted by popularity";
                             } else if (which == 2) {
                                 sort_by = "vote_average.desc";
+                                snackBarMessage = "Sorted by vote average";
                             } else if (which == 3) {
                                 sort_by = "original_title.desc";
+                                snackBarMessage = "Sorted by title (A-Z)";
+                            } else if (which == 4) {
+                                sort_by = "original_title.asc";
+                                snackBarMessage = "Sorted by title (A-Z)";
                             }
+
+                            // TODO - SNACKBAR MESSAGE
 
                             FetchMoviesTask fmt = new FetchMoviesTask();
                             fmt.execute();
 
+                            // We need an Editor object to make preference changes.
+                            // All objects are from android.context.Context
+                            SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
+                            SharedPreferences.Editor editor = settings.edit();
+                            editor.putString(PREFS_NAME, snackBarMessage);
+                            editor.apply();
                         }
                     });
+
             return builder.create();
         }
-
-
     }
 }
-
-

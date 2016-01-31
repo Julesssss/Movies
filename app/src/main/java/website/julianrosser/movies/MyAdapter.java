@@ -28,7 +28,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             super(rl);
 
             mImageView = (ImageView) rl.findViewById(R.id.imageView);
-
             // mTextView = t;
         }
     }

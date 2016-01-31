@@ -4,6 +4,7 @@ App for discovering new films & TV shows. Uses Picasso library and TheMoviesDB A
 
 ![](http://julianrosser.website/images/app_screenshots/movies01.png)
 
-// ToDo
-- correct image size in RecyclerView columns
-- alternative API calls
+// TODO
+- Correct image size in RecyclerView columns
+- Alternative API calls
+- Only update after sort change if actually changed

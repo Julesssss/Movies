@@ -5,13 +5,15 @@
         <item>Release Date</item>
         <item>Popularity</item>
         <item>Vote Average</item>
-        <item>Title</item>
+        <item>Title (A-Z)</item>
+        <item>Title (Z-A)</item>
     </string-array>
 
     <string-array name="sort_choice_values">
         <item>release_date.desc</item>
         <item>popularity.desc</item>
         <item>vote_average.desc</item>
+        <item>original_title.asc</item>
         <item>original_title.desc</item>
     </string-array>
 

@@ -10,7 +10,7 @@
         android:id="@+id/posterImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true" />
 
     <TextView
         android:id="@+id/release_date"
@@ -23,19 +23,19 @@
     <TextView
         android:id="@+id/text_rating"
         android:layout_width="wrap_content"
-        android:layout_below="@id/release_date"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_below="@id/release_date"
         android:layout_marginBottom="16dp"
         android:textSize="18sp" />
 
 
     <TextView
         android:id="@+id/title_summary"
-        android:layout_below="@id/text_rating"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_below="@id/text_rating"
         android:text="Summary"
         android:textSize="18sp" />
 
