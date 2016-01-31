@@ -3,9 +3,11 @@ package website.julianrosser.movies;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -40,10 +42,7 @@ public class GridListFragment extends Fragment {
     public static final String PREFS_NAME = "MyPrefsFile";
     public static final String PREF_SORT = "pref_sort_by";
 
-    // Restore preferences
-    SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
-    String sort_by = settings.getString(PREF_SORT, "popularity.desc");
-
+    String sort_by;
 
     static ArrayList<Movie> movies;
 
@@ -51,6 +50,7 @@ public class GridListFragment extends Fragment {
     final String TAG = getClass().getSimpleName();
 
     final int DEFAULT_COLUMNS = 2;
+    int columns;
 
     public GridListFragment() {
         // Required empty public constructor
@@ -60,6 +60,32 @@ public class GridListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        // Restore preferences
+        SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
+        sort_by = settings.getString(PREF_SORT, "popularity.desc");
+
+        columns = getDesiredColumnCount();
+
+    }
+
+    // Decide column count depending on device size and orientation
+    private int getDesiredColumnCount() {
+        int cols;
+
+        // If device is tablet, increase
+        if (getResources().getBoolean(R.bool.isTablet)) {
+            cols = 3;
+        } else {
+            cols = DEFAULT_COLUMNS;
+        }
+
+        // If orientation is landscape, double columns
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            cols = cols * 2;
+        }
+
+        return cols;
     }
 
     @Override
@@ -76,7 +102,7 @@ public class GridListFragment extends Fragment {
         mRecyclerView.setHasFixedSize(false); // todo - change when image size is final?????
 
         // Use GridLayout with 2 columns // todo - change depending on device width?
-        mLayoutManager = new GridLayoutManager(getActivity(), DEFAULT_COLUMNS);
+        mLayoutManager = new GridLayoutManager(getActivity(), columns);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Start fetching data
@@ -284,14 +310,14 @@ public class GridListFragment extends Fragment {
                                 sort_by = "vote_average.desc";
                                 snackBarMessage = "Sorted by vote average";
                             } else if (which == 3) {
-                                sort_by = "original_title.desc";
-                                snackBarMessage = "Sorted by title (A-Z)";
-                            } else if (which == 4) {
                                 sort_by = "original_title.asc";
                                 snackBarMessage = "Sorted by title (A-Z)";
+                            } else if (which == 4) {
+                                sort_by = "original_title.desc";
+                                snackBarMessage = "Sorted by title (Z-A)";
                             }
 
-                            // TODO - SNACKBAR MESSAGE
+                            Snackbar.make(mRecyclerView, snackBarMessage, Snackbar.LENGTH_SHORT).show();
 
                             FetchMoviesTask fmt = new FetchMoviesTask();
                             fmt.execute();
@@ -300,7 +326,7 @@ public class GridListFragment extends Fragment {
                             // All objects are from android.context.Context
                             SharedPreferences settings = getActivity().getSharedPreferences(PREFS_NAME, 0);
                             SharedPreferences.Editor editor = settings.edit();
-                            editor.putString(PREFS_NAME, snackBarMessage);
+                            editor.putString(PREF_SORT, sort_by);
                             editor.apply();
                         }
                     });
