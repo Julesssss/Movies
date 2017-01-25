@@ -1,8 +1,8 @@
 # Movies Application
 
-App for discovering new films & TV shows. Uses Picasso library and TheMoviesDB API.
+App for discovering new films & TV shows. Uses Picasso library and TheMoviesDB API. Final project for Google's Building Android Apps course.
 
-![](http://julianrosser.website/images/app_screenshots/movies01.png)
+![](http://i.imgur.com/657XPmV.png)![](http://i.imgur.com/2kYmM2b.png)
 
 // TODO
 - Correct image size in RecyclerView columns
